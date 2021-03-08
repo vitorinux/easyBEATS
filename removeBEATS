@@ -36,7 +36,7 @@ sudo rm -rf /var/log/metricbeat
 sudo rm -rf /var/log/auditbeat
 sudo /bin/systemctl daemon-reload
 echo "Removing Build Directories"
-rm -rf $HOME/go
-rm -rf $HOME/easyBEATS_log.txt
-rm $HOME/pibeat_log.txt
+#rm -rf $HOME/go
+#rm -rf $HOME/easyBEATS_log.txt
+#rm $HOME/pibeat_log.txt
 echo "Finished"

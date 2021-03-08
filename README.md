@@ -3,9 +3,11 @@
 
 ### About
 
+forked from josh-thurston/easyBEATS
+
 easyBEATS is a project started to make the installation of Beats packages faster and easier for Ubuntu, Mac, and even Raspberry Pi (ARM architecture). The focus was for Rasperry Pi since Elastic does not have a supported release on ARM architecture.  easyBEATS also resolves issues related to the outdated golang-go package in the RPi apt repo which prevents the successful installation of Beats newer than v7.3.2.  The current version of the script will let you install one or multiple Beats at any version.
 
-The instructions are here so that you can compile Beats on your own.  If you would prefer something a bit easier that doesn't require compiling source code, visit the repo from a contributyor RaoulDuke [Beats-Pi repo](https://github.com/RaoulDuke-Esq/Beats-Pi) for some pre-baked Beats that you can install via apt.
+**NOTE: THIS INSTALL PACKAGE GET YOU A VERSION 7.11.1 BEATS ON arm64 OS.**
 
 ## How To Use
 
@@ -35,18 +37,20 @@ vi easyBEATS
 
 Review the default options at the top of the script and change as necessary.
 
+**NOTE: This script download GO 1.15.6 for arm64**
+
 ```
-UPDATE_SYSTEM=true #change to false if you don't want to upgrade your whole system
-INSTALL_DEPS=true #change to false if you have already run this script successfully before
-USE_SWAP=true #change to fales if you're using a Pi4 with 2GB of RAM or more
-WORKING_DIR="beat-factory" #this directory will be created in /home/pi
-#visit https://github.com/elastic/beats/releases to find other version numbers and commit numbers
-BEAT_VERSION_NUM="7.5.2" #the version number of the Beats release you want to use
-BEAT_VERSION="a9c1414" #the commit number of the Beats release you want to use
-#add as many beats as you want to BEAT_NAME separated by a space
-BEAT_NAME=( metricbeat filebeat ) #metricbeat filebeat packetbeat auditbeat heartbeat
-INSTALL_LOCAL=true #set to false if you only want to compile without installing
-CLEAN_UP=true #set to false if you want to keep the source files on your Pi
+UPDATE_SYSTEM=true #change to false if you don't want to upgrade your whole system                                                                                                                                               
+INSTALL_DEPS=true #change to false if you have already run this script successfully before                                                                                                                                       
+USE_SWAP=false #change to fales if you're using a Pi4 with 2GB of RAM or more                                                                                                                                                    
+WORKING_DIR="beat-factory" #this directory will be created in /home/pi                                                                                                                                                           
+#visit https://github.com/elastic/beats/releases to find other version numbers and commit numbers                                                                                                                                
+BEAT_VERSION="v7.11.1" #the version tag name or commit id of the Beats release you want to use                  
+#add as many beats as you want to BEAT_NAME separated by a space                                                
+BEAT_NAME=( filebeat metricbeat ) #metricbeat filebeat packetbeat auditbeat heartbeat                           
+#BEAT_NAME=( packetbeat auditbeat heartbeat) #metricbeat filebeat packetbeat auditbeat heartbeat                
+INSTALL_LOCAL=true #set to false if you only want to compile without installing                                 
+CLEAN_UP=false #set to false if you want to keep the source files on your Pi 
 ```
 
 Save your changes and quit VI by typing Esc ZZ.
@@ -91,7 +95,6 @@ If you mess up or you want to remove everything you can run removeBEATS.
 Tested with metricbeat, packetbeat, and filebeat.  Others may work but have not been tested.  
 
 File an issue if you run into a problem or have a question.
-
 
 
 ## Additional Info

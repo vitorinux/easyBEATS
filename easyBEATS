@@ -1,16 +1,16 @@
 #!/bin/bash
-
 # Script variables
 UPDATE_SYSTEM=true #change to false if you don't want to upgrade your whole system
 INSTALL_DEPS=true #change to false if you have already run this script successfully before
-USE_SWAP=true #change to fales if you're using a Pi4 with 2GB of RAM or more
+USE_SWAP=false #change to fales if you're using a Pi4 with 2GB of RAM or more
 WORKING_DIR="beat-factory" #this directory will be created in /home/pi
 #visit https://github.com/elastic/beats/releases to find other version numbers and commit numbers
-BEAT_VERSION="v7.5.2" #the version tag name or commit id of the Beats release you want to use
+BEAT_VERSION="v7.11.1" #the version tag name or commit id of the Beats release you want to use
 #add as many beats as you want to BEAT_NAME separated by a space
-BEAT_NAME=( metricbeat filebeat ) #metricbeat filebeat packetbeat auditbeat heartbeat
+BEAT_NAME=( filebeat metricbeat ) #metricbeat filebeat packetbeat auditbeat heartbeat
+#BEAT_NAME=( packetbeat auditbeat heartbeat) #metricbeat filebeat packetbeat auditbeat heartbeat
 INSTALL_LOCAL=true #set to false if you only want to compile without installing
-CLEAN_UP=true #set to false if you want to keep the source files on your Pi
+CLEAN_UP=false #set to false if you want to keep the source files on your Pi
 
 function clean_up {
   sudo rm -rf $HOME/${WORKING_DIR}
@@ -22,7 +22,8 @@ function compile_beats {
   do
     echo "Compiling $beat"
     cd $HOME/${WORKING_DIR}/src/github.com/elastic/beats/$beat;
-    GOOS=linux GOARCH=arm go get;
+    #GOOS=linux GOARCH=arm go get;
+    GOOS=linux GOARCH=arm64 go get;
     make;
     echo "$beat created"
   done
@@ -53,10 +54,10 @@ function copy_source_code {
 }
 
 function install_dependencies {
-  if [ $(dpkg-query -W -f='${Status}' python-pip 2>/dev/null | grep -c "ok installed") -eq 0 ];
+  if [ $(dpkg-query -W -f='${Status}' python3-pip 2>/dev/null | grep -c "ok installed") -eq 0 ];
   then
     echo "Installing python-pip..."
-    sudo apt-get install python-pip -y;
+    sudo apt-get install python3-pip -y;
   fi
 
   if [ $(dpkg-query -W -f='${Status}' git 2>/dev/null | grep -c "ok installed") -eq 0 ];
@@ -65,10 +66,10 @@ function install_dependencies {
     sudo apt-get install git -y;
   fi
 
-  if python -c 'import pkgutil; exit(pkgutil.find_loader("virtualenv"))';
+  if python3 -c 'import pkgutil; exit(pkgutil.find_loader("virtualenv"))';
   then
     echo "Installing virtualenv..."
-    pip install virtualenv
+    pip3 install virtualenv
   fi
 
   if [ $(dpkg-query -W -f='${Status}' make 2>/dev/null | grep -c "ok installed") -eq 0 ];
@@ -91,13 +92,19 @@ function install_dependencies {
   fi
 
   echo "Installing go..."
-  wget https://dl.google.com/go/go1.13.8.linux-armv6l.tar.gz
-  sudo tar -C /usr/share -xzf go1.13.8.linux-armv6l.tar.gz
+  #wget https://dl.google.com/go/go1.13.8.linux-armv6l.tar.gz
+  wget https://golang.org/dl/go1.15.6.linux-arm64.tar.gz
+  #sudo tar -C /usr/share -xzf go1.13.8.linux-armv6l.tar.gz
+  sudo tar -C /usr/share -xzf go1.15.6.linux-arm64.tar.gz
   sudo chmod -R 775 /usr/share/go/
-  sudo chmod -R 777 /usr/share/go/pkg/linux_arm/
+  #sudo chmod -R 777 /usr/share/go/pkg/linux_arm/
+  sudo chmod -R 777 /usr/share/go/pkg/linux_arm64/
+  #export PATH="/usr/local/go/bin:$PATH"
+  #export GOPATH="/usr/local/go/bin"
   export PATH=$PATH:/usr/share/go/bin;
   export GOPATH=$HOME/${WORKING_DIR};
-  rm go1.13.8.linux-armv6l.tar.gz;
+  #rm go1.13.8.linux-armv6l.tar.gz;
+  rm go1.15.6.linux-arm64.tar.gz;
 
   sudo apt-get install libpcap-dev -y
 
@@ -184,6 +191,8 @@ then
   echo "Installing dependencies..."
   install_dependencies
 else
+#export PATH="/usr/local/go/bin:$PATH"
+#export GOPATH="/usr/local/go/bin"
   export PATH=$PATH:/usr/share/go/bin;
   export GOPATH=$HOME/${WORKING_DIR};
   echo "Skipping dependency installation"
